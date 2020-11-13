@@ -1,4 +1,6 @@
-﻿@model IEnumerable<EmployeesCh12.Models.Employee>
+﻿@using EmployeesCh12.Models;
+@model PaginatedList<EmployeesCh12.Models.Employee>
+
 
 @{
     ViewData["Title"] = "Index";
@@ -9,23 +11,31 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+<form asp-action="Index" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Find by name: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
+                          <input type="submit" value="Search" class="btn btn-default" /> | <a asp-action="Index">Back to Full List</a>
+        </p>
+    </div>
+</form>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.FirstName)
+                @Html.DisplayName("First Name")
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LastName)
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Last Name</a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.HireDate)
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Hire Date</a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Department)
+                @Html.DisplayName("Department")
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.BenefitID)
+                @Html.DisplayName("Benefit Category")
             </th>
             <th></th>
         </tr>
@@ -43,10 +53,10 @@
                 @Html.DisplayFor(modelItem => item.HireDate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Department.ID)
+                @Html.DisplayFor(modelItem => item.Department.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.BenefitID)
+                @Html.DisplayFor(modelItem => item.Benefits.Category)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
@@ -57,3 +67,19 @@
 }
     </tbody>
 </table>
+@{ 
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @prevDisabled">Previous</a>
+
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @nextDisabled">Next</a>
